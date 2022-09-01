@@ -24,7 +24,7 @@ import soundfile as sf
 
 class Result:
     def __init__(
-        self, file: str, subtype: str, use_limiter: bool = True, normalize: bool = True
+        self, file: str, subtype: str, use_limiter: bool = True, normalize: bool = True, no_eq: bool = False
     ):
         _, file_ext = os.path.splitext(file)
         file_ext = file_ext[1:].upper()
@@ -36,6 +36,7 @@ class Result:
         self.subtype = subtype
         self.use_limiter = use_limiter
         self.normalize = normalize
+        self.no_eq = no_eq
 
 
 def pcm16(file: str) -> Result:
