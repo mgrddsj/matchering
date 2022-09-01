@@ -22,7 +22,7 @@ import numpy as np
 from .log import Code, info, debug, debug_line
 from . import Config
 from .utils import to_db
-from .dsp import amplify, normalize, clip
+from .dsp import amplify, normalize, clip, butter_bandpass_filter
 from .stage_helpers import (
     normalize_reference,
     analyze_levels,
@@ -214,6 +214,7 @@ def main(
     need_default: bool = True,
     need_no_limiter: bool = False,
     need_no_limiter_normalized: bool = False,
+    need_no_equalizer: bool = False,
 ) -> (np.ndarray, np.ndarray, np.ndarray):
     (
         target_mid,
@@ -228,19 +229,24 @@ def main(
         reference_match_rms,
     ) = __match_levels(target, reference, config)
 
-    del target, reference
-
-    result_no_limiter, result_no_limiter_mid = __match_frequencies(
-        target_mid,
-        target_side,
-        target_mid_loudest_pieces,
-        reference_mid_loudest_pieces,
-        target_side_loudest_pieces,
-        reference_side_loudest_pieces,
-        config,
-    )
+    if need_no_equalizer:
+        debug("Bypassing equalizer")
+        result_no_limiter = target
+        result_no_limiter_mid = target_mid
+    else: 
+        result_no_limiter, result_no_limiter_mid = __match_frequencies(
+            target_mid,
+            target_side,
+            target_mid_loudest_pieces,
+            reference_mid_loudest_pieces,
+            target_side_loudest_pieces,
+            reference_side_loudest_pieces,
+            config,
+        )
 
     del (
+        target,
+        reference,
         target_mid,
         target_side,
         target_mid_loudest_pieces,
@@ -249,14 +255,15 @@ def main(
         reference_side_loudest_pieces,
     )
 
-    result_no_limiter = __correct_levels(
-        result_no_limiter,
-        result_no_limiter_mid,
-        target_divisions,
-        target_piece_size,
-        reference_match_rms,
-        config,
-    )
+    if not need_no_equalizer:
+        result_no_limiter = __correct_levels(
+            result_no_limiter,
+            result_no_limiter_mid,
+            target_divisions,
+            target_piece_size,
+            reference_match_rms,
+            config,
+        )
 
     del result_no_limiter_mid
 

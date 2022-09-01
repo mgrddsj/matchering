@@ -83,6 +83,7 @@ def process(
         need_no_limiter_normalized=any(
             not rr.use_limiter and rr.normalize for rr in results
         ),
+        need_no_equalizer=any(rr.no_eq for rr in results),
     )
 
     del reference

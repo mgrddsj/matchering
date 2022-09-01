@@ -24,7 +24,7 @@ from scipy import signal, interpolate
 
 from ..log import debug
 from .. import Config
-from ..dsp import ms_to_lr, smooth_lowess
+from ..dsp import ms_to_lr, smooth_lowess, butter_bandpass_filter
 
 
 def __average_fft(
@@ -43,6 +43,7 @@ def __average_fft(
 
 
 def __smooth_exponentially(matching_fft: np.ndarray, config: Config) -> np.ndarray:
+    
     grid_linear = (
         config.internal_sample_rate * 0.5 * np.linspace(0, 1, config.fft_size // 2 + 1)
     )
@@ -70,7 +71,7 @@ def __smooth_exponentially(matching_fft: np.ndarray, config: Config) -> np.ndarr
     matching_fft_filtered = interpolator(grid_linear)
 
     matching_fft_filtered[0] = 0
-    matching_fft_filtered[1] = matching_fft[1]
+    
 
     return matching_fft_filtered
 
@@ -86,17 +87,45 @@ def get_fir(
     target_average_fft = __average_fft(
         target_loudest_pieces, config.internal_sample_rate, config.fft_size
     )
+    
     reference_average_fft = __average_fft(
         reference_loudest_pieces, config.internal_sample_rate, config.fft_size
     )
 
+
     np.maximum(config.min_value, target_average_fft, out=target_average_fft)
     matching_fft = reference_average_fft / target_average_fft
+    if name == "mid":
+        # high filter, taming filter for more natural character of music
+        for x in range(int(config.high_filter*2*len(matching_fft)/config.internal_sample_rate),len(matching_fft)):
+            if matching_fft[x] > 1:
+                matching_fft[x] = 1
+    if name == "side":
+        # low filter, avoid gaining low range => muddiness
+        for x in range(int(config.low_filter*2*len(matching_fft)/config.internal_sample_rate)):
+            if matching_fft[x] > 1:
+                matching_fft[x] = 1
+        # high filter, taming filter for more natural character of music, leave out high freq air
+        for x in range(int(config.high_filter*2*len(matching_fft)/config.internal_sample_rate),int(len(matching_fft)/2)):
+            if matching_fft[x] > 1:
+                matching_fft[x] = 0.5 * matching_fft[x]
 
     matching_fft_filtered = __smooth_exponentially(matching_fft, config)
 
     fir = np.fft.irfft(matching_fft_filtered)
     fir = np.fft.ifftshift(fir) * signal.windows.hann(len(fir))
+
+    import matplotlib.pyplot as plt
+    fig, (ax_orig, ax_mag) = plt.subplots(2, 1)
+    ax_orig.plot(target_average_fft)
+    ax_orig.set_xscale('log')
+    ax_orig.set_title('original_fft')
+    ax_mag.plot(matching_fft_filtered)
+    ax_mag.set_xscale('log')
+    ax_mag.set_title('filter')
+    fig.tight_layout()
+    if __debug__:
+        fig.show()
 
     return fir
 

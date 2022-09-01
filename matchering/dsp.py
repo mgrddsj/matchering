@@ -20,7 +20,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
 import statsmodels.api as sm
+from scipy.signal import butter, sosfilt, freqs
+import matplotlib.pyplot as plt
 
+from matchering.defaults import Config
 
 def size(array: np.ndarray) -> int:
     return array.shape[0]
@@ -105,6 +108,19 @@ def smooth_lowess(array: np.ndarray, frac: float, it: int, delta: float) -> np.n
         array, np.linspace(0, 1, len(array)), frac=frac, it=it, delta=delta
     )[:, 1]
 
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=4):
+    nyq = 0.5 * fs
+    sos = butter(order, [lowcut/nyq, highcut/nyq], 'band',output='sos')
+    y = sosfilt(sos, data)
+
+    
+    plt.semilogy(y)
+    plt.title('Butterworth filter frequency response')
+    plt.axvline(100, color='green') # cutoff frequency
+    if __debug__:
+        plt.show()
+
+    return y
 
 def clip(array: np.ndarray, to: float = 1) -> np.ndarray:
     return np.clip(array, -to, to)

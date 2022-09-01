@@ -13,7 +13,7 @@ mg.process(
     results=[
         #mg.pcm16("my_song_master_16bit.wav"),
         mg.Result(
-            "test.wave", subtype="PCM_24", use_limiter=True, normalize=True,
+            "examples\\test.wav", subtype="PCM_24", use_limiter=True, normalize=True,
             no_eq= False
         ),
     ],

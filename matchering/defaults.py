@@ -72,9 +72,11 @@ class Config:
         clipping_samples_threshold: int = 8,
         limited_samples_threshold: int = 128,
         allow_equality: bool = False,
-        lowess_frac: float = 0.0375,
+        lowess_frac: float = 0.075,
         lowess_it: int = 0,
         lowess_delta: float = 0.001,
+        high_filter: int = 800,
+        low_filter: int = 200,
         preview_size: float = 30,
         preview_analysis_step: float = 5,
         preview_fade_size: float = 1,
@@ -138,6 +140,11 @@ class Config:
         self.lowess_frac = lowess_frac
         self.lowess_it = lowess_it
         self.lowess_delta = lowess_delta
+
+        assert low_filter > 0
+        assert high_filter > low_filter
+        self.high_filter = high_filter
+        self.low_filter = low_filter
 
         assert preview_size > 5
         assert preview_analysis_step > 1
