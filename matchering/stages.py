@@ -202,6 +202,16 @@ def __finalize(
         result = limit(result_no_limiter, config)
         result = amplify(result, final_amplitude_coefficient)
 
+    """ import matplotlib.pyplot as plt
+    fig, (ax_orig, ax_mag) = plt.subplots(2, 1)
+    ax_orig.plot(result_no_limiter)
+    ax_orig.set_title('before limiter')
+    ax_mag.plot(result)
+    ax_mag.set_title('after limiter')
+    fig.tight_layout()
+    if __debug__:
+        fig.show() """
+
     result_no_limiter = result_no_limiter if need_no_limiter else None
 
     return result, result_no_limiter, result_no_limiter_normalized

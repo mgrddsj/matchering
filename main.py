@@ -1,5 +1,6 @@
 import matchering as mg
 
+
 # Sending all log messages to the default print function
 # Just delete the following line to work silently
 mg.log(print)
@@ -13,7 +14,7 @@ mg.process(
     results=[
         #mg.pcm16("my_song_master_16bit.wav"),
         mg.Result(
-            "examples\\test.wav", subtype="PCM_24", use_limiter=True, normalize=True,
+            "examples\\test.mp3","LAME", use_limiter=True, normalize=True,
             no_eq= False
         ),
     ],
@@ -38,4 +39,12 @@ mg.process(
         # The remaining parameters will be filled with default values
         # Examine defaults.py to find other parameters
     ),
+    preview_target = mg.Result(
+            "examples\\target.mp3","LAME", use_limiter=True, normalize=True,
+            no_eq= False
+        ),
+    preview_result = mg.Result(
+            "examples\\preview.mp3","LAME", use_limiter=True, normalize=True,
+            no_eq= False
+        ),
 )

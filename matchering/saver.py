@@ -20,6 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as np
 import soundfile as sf
+from pedalboard.io import AudioFile
 
 from .log import debug
 
@@ -29,5 +30,16 @@ def save(
 ) -> None:
     name = name.upper()
     debug(f"Saving the {name} {sample_rate} Hz Stereo {subtype} to: '{file}'...")
-    sf.write(file, result, sample_rate, subtype)
+    if subtype == 'LAME':
+        with AudioFile(
+        file,
+        "w",
+        samplerate=sample_rate,
+        num_channels=2,
+        quality=320,  # kilobits per second
+        ) as f:
+            f.write(result)
+    else :
+        sf.write(file, result, sample_rate, subtype)
+    
     debug(f"'{file}' is saved")
