@@ -139,6 +139,7 @@ def analyze_levels(
     mid, side = lr_to_ms(array)
     del array
 
+
     array_size, divisions, piece_size = __calculate_piece_sizes(
         mid, config.max_piece_size, name, config.internal_sample_rate
     )
@@ -146,9 +147,16 @@ def analyze_levels(
     unfolded_mid, rmses, average_rms = get_average_rms(mid, piece_size, divisions, name)
     unfolded_side = unfold(side, piece_size, divisions)
 
-    mid_loudest_pieces, side_loudest_pieces, match_rms = __extract_loudest_pieces(
-        rmses, average_rms, unfolded_mid, unfolded_side, name
-    )
+    if name == "reference" and config.reference_processed:
+        debug("Using processed reference as a whole")
+        mid_loudest_pieces = mid
+        side_loudest_pieces = side
+        match_rms = average_rms
+    else:
+        mid_loudest_pieces, side_loudest_pieces, match_rms = __extract_loudest_pieces(
+            rmses, average_rms, unfolded_mid, unfolded_side, name
+        )
+    
 
     return (
         mid,

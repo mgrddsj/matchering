@@ -72,6 +72,7 @@ class Config:
         clipping_samples_threshold: int = 8,
         limited_samples_threshold: int = 128,
         allow_equality: bool = False,
+        reference_processed: bool = False,
         lowess_frac: float = 0.075,
         lowess_it: int = 0,
         lowess_delta: float = 0.001,
@@ -132,6 +133,8 @@ class Config:
 
         assert isinstance(allow_equality, bool)
         self.allow_equality = allow_equality
+        assert isinstance(reference_processed, bool)
+        self.reference_processed= reference_processed
 
         assert lowess_frac > 0
         assert lowess_it >= 0

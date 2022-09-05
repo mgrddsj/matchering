@@ -7,9 +7,9 @@ mg.log(print)
 
 mg.process(
     # The track you want to master
-    target="examples\\20062022035056.mp3",
+    target="examples\\29072022100325.mp3",
     # Some "wet" reference track
-    reference="examples\ellie.mp3",
+    reference="examples\\best ost short.wav",
     # Where and how to save your results
     results=[
         #mg.pcm16("my_song_master_16bit.wav"),
@@ -33,6 +33,7 @@ mg.process(
         # preview_size=15,
         # Allow matchering to accept the same files (useless in fact)
         # allow_equality=True
+        reference_processed = True,
         # high_filter = 800, in Hz
         # low_filter = 200, in Hz
         # Etc...

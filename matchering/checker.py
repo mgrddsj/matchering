@@ -55,7 +55,7 @@ def __check_length(
 ) -> None:
     length = size(array)
     debug(f"{name} audio length: {length} samples ({time_str(length, sample_rate)})")
-    if length > max_length:
+    if length > max_length and name == "TARGET":
         raise ModuleError(error_code_max)
     elif length < min_length:
         raise ModuleError(error_code_min)

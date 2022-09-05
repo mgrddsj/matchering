@@ -99,7 +99,7 @@ def get_fir(
         # high filter, taming filter for more natural character of music
         for x in range(int(config.high_filter*2*len(matching_fft)/config.internal_sample_rate),len(matching_fft)):
             if matching_fft[x] > 1:
-                matching_fft[x] = 1
+                matching_fft[x] = 0.5 * matching_fft[x]
     if name == "side":
         # low filter, avoid gaining low range => muddiness
         for x in range(int(config.low_filter*2*len(matching_fft)/config.internal_sample_rate)):

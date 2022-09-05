@@ -33,6 +33,7 @@ from .stage_helpers import (
     get_rms_c_and_amplify_pair,
 )
 from .limiter import limit
+from pedalboard import Pedalboard, Limiter
 
 
 def __match_levels(
@@ -198,11 +199,14 @@ def __finalize(
             )
 
     result = None
+    # Make a Pedalboard object, containing multiple plugins:
+    board = Pedalboard([Limiter(threshold_db=-0.2, release_ms=75)])
     if need_default:
-        result = limit(result_no_limiter, config)
-        result = amplify(result, final_amplitude_coefficient)
+        result = board(result_no_limiter, config.internal_sample_rate)
+        # result = limit(result_no_limiter, config)
+        # result = amplify(result, final_amplitude_coefficient)
 
-    """ import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
     fig, (ax_orig, ax_mag) = plt.subplots(2, 1)
     ax_orig.plot(result_no_limiter)
     ax_orig.set_title('before limiter')
@@ -210,7 +214,7 @@ def __finalize(
     ax_mag.set_title('after limiter')
     fig.tight_layout()
     if __debug__:
-        fig.show() """
+        fig.show()
 
     result_no_limiter = result_no_limiter if need_no_limiter else None
 
