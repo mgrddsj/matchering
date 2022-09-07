@@ -7,14 +7,14 @@ mg.log(print)
 
 mg.process(
     # The track you want to master
-    target="examples\\29072022100325.mp3",
+    target="C:\\Users\\tkich\Downloads\Sheep - isacc arr3d.mp3",
     # Some "wet" reference track
-    reference="examples\\best ost short.wav",
+    reference="examples\\best ost mix.wav",
     # Where and how to save your results
     results=[
         #mg.pcm16("my_song_master_16bit.wav"),
         mg.Result(
-            "examples\\test.mp3","LAME", use_limiter=True, normalize=True,
+            "examples\\result.mp3","LAME", use_limiter=True, normalize=True,
             no_eq= False
         ),
     ],
@@ -27,6 +27,7 @@ mg.process(
         # internal_sample_rate=96000,
         # Change the threshold value (float, not dB) from the default value of 0.9981 (-0.01 dB)
         # threshold=0.7079,  # -3 dB
+        fft_size= 8192,
         # Change the temp folder to work with ffmpeg
         # temp_folder="/tmp",
         # Lower the preview length to 15 seconds from the default value of 30
@@ -41,7 +42,7 @@ mg.process(
         # Examine defaults.py to find other parameters
     ),
     preview_target = mg.Result(
-            "examples\\target.mp3","LAME", use_limiter=True, normalize=True,
+            "examples\\original.mp3","LAME", use_limiter=True, normalize=True,
             no_eq= False
         ),
     preview_result = mg.Result(

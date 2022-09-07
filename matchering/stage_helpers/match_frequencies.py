@@ -91,22 +91,40 @@ def get_fir(
     reference_average_fft = __average_fft(
         reference_loudest_pieces, config.internal_sample_rate, config.fft_size
     )
+    fft_size = config.internal_sample_rate/2/len(reference_average_fft)
+    
+    target_peak = target_average_fft[:int(config.low_filter/fft_size)].argmax().min()
+    reference_peak = reference_average_fft[:int(config.low_filter/fft_size)].argmax().min()
 
+    if target_peak > reference_peak/1.5 and target_peak < reference_peak*1.5: # within +/- a perfect 5th
+        # transpose in terms of FFT numpy
+        peak_diff = target_peak - reference_peak
+        if peak_diff < 0:
+            reference_average_fft = np.delete(reference_average_fft,range(abs(peak_diff)))
+            reference_average_fft = np.append(reference_average_fft, reference_average_fft[peak_diff:])
+        if peak_diff > 0:
+            reference_average_fft = reference_average_fft[:-peak_diff]
+            reference_average_fft = np.insert(reference_average_fft,0,reference_average_fft[0:peak_diff])
 
     np.maximum(config.min_value, target_average_fft, out=target_average_fft)
     matching_fft = reference_average_fft / target_average_fft
     if name == "mid":
+        # if the target is poor in low range, avoid boosting
+        if target_average_fft.argmax().min() > config.low_filter/fft_size:
+            for x in range(int(config.low_filter/fft_size)):
+                if matching_fft[x] > 1:
+                    matching_fft[x] = 1
         # high filter, taming filter for more natural character of music
-        for x in range(int(config.high_filter*2*len(matching_fft)/config.internal_sample_rate),len(matching_fft)):
+        for x in range(int(config.high_filter/fft_size),len(matching_fft)):
             if matching_fft[x] > 1:
                 matching_fft[x] = 0.5 * matching_fft[x]
     if name == "side":
         # low filter, avoid gaining low range => muddiness
-        for x in range(int(config.low_filter*2*len(matching_fft)/config.internal_sample_rate)):
+        for x in range(int(max(config.low_filter/fft_size, target_average_fft.argmax().min()))):
             if matching_fft[x] > 1:
                 matching_fft[x] = 1
         # high filter, taming filter for more natural character of music, leave out high freq air
-        for x in range(int(config.high_filter*2*len(matching_fft)/config.internal_sample_rate),int(len(matching_fft)/2)):
+        for x in range(int(config.high_filter/fft_size),int(len(matching_fft)/2)):
             if matching_fft[x] > 1:
                 matching_fft[x] = 0.5 * matching_fft[x]
 
@@ -116,10 +134,13 @@ def get_fir(
     fir = np.fft.ifftshift(fir) * signal.windows.hann(len(fir))
 
     import matplotlib.pyplot as plt
-    fig, (ax_orig, ax_mag) = plt.subplots(2, 1)
+    fig, (ax_orig,ax_ref, ax_mag) = plt.subplots(3, 1)
     ax_orig.plot(target_average_fft)
     ax_orig.set_xscale('log')
     ax_orig.set_title('original_fft')
+    ax_ref.plot(reference_average_fft)
+    ax_ref.set_xscale('log')
+    ax_ref.set_title('ref_fft')
     ax_mag.plot(matching_fft_filtered)
     ax_mag.set_xscale('log')
     ax_mag.set_title('filter')
