@@ -33,7 +33,7 @@ from .stage_helpers import (
     get_rms_c_and_amplify_pair,
 )
 from .limiter import limit
-from pedalboard import Pedalboard, Limiter
+from pedalboard import Pedalboard, Limiter, load_plugin
 
 
 def __match_levels(
@@ -200,7 +200,9 @@ def __finalize(
 
     result = None
     # Make a Pedalboard object, containing multiple plugins:
-    board = Pedalboard([Limiter(threshold_db=-0.2, release_ms=75)])
+    vst = load_plugin("LoudMax.vst3")
+    print(vst.parameters.keys())
+    board = Pedalboard([vst])
     if need_default:
         result = board(result_no_limiter, config.internal_sample_rate)
         # result = limit(result_no_limiter, config)
