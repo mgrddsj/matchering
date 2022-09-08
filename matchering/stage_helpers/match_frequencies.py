@@ -88,9 +88,14 @@ def get_fir(
         target_loudest_pieces, config.internal_sample_rate, config.fft_size
     )
     
-    reference_average_fft = __average_fft(
-        reference_loudest_pieces, config.internal_sample_rate, config.fft_size
-    )
+    if config.reference_preset:
+        reference_average_fft = np.load('ref_'+ name +'.npy')
+    else:
+        reference_average_fft = __average_fft(
+            reference_loudest_pieces, config.internal_sample_rate, config.fft_size
+        )
+    # np.save('ref_'+ name +'.npy',reference_average_fft)
+
     fft_size = config.internal_sample_rate/2/len(reference_average_fft)
     
     target_peak = target_average_fft[:int(config.low_filter/fft_size)].argmax().min()

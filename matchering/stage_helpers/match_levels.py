@@ -167,3 +167,7 @@ def analyze_levels(
         divisions,
         piece_size,
     )
+
+def preset_level(name: str = "PRESET") -> (float, float):
+    if name == "PRESET":
+        return 0.36249, 1

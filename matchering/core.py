@@ -54,24 +54,29 @@ def process(
     # Analyze the target
     target, target_sample_rate = check(target, target_sample_rate, config, "target")
 
-    # Load the reference
-    reference, reference_sample_rate = load(reference, "reference", temp_folder)
-    # Analyze the reference
-    reference, reference_sample_rate = check(
-        reference, reference_sample_rate, config, "reference"
-    )
+    # is using preset?
+    if config.reference_preset:
+        reference = None
+        reference_sample_rate = config.internal_sample_rate
+    else:
+        # Load the reference
+        reference, reference_sample_rate = load(reference, "reference", temp_folder)
+        # Analyze the reference
+        reference, reference_sample_rate = check(
+            reference, reference_sample_rate, config, "reference"
+        )
 
-    # Analyze the target and the reference together
-    if not config.allow_equality:
-        check_equality(target, reference)
+        # Analyze the target and the reference together
+        if not config.allow_equality:
+            check_equality(target, reference)
 
-    # Validation of the most important conditions
-    if (
-        not (target_sample_rate == reference_sample_rate == config.internal_sample_rate)
-        or not (channel_count(target) == channel_count(reference) == 2)
-        or not (size(target) > config.fft_size and size(reference) > config.fft_size)
-    ):
-        raise ModuleError(Code.ERROR_VALIDATION)
+        # Validation of the most important conditions
+        if (
+            not (target_sample_rate == reference_sample_rate == config.internal_sample_rate)
+            or not (channel_count(target) == channel_count(reference) == 2)
+            or not (size(target) > config.fft_size and size(reference) > config.fft_size)
+        ):
+            raise ModuleError(Code.ERROR_VALIDATION)
 
     # Process
     result, result_no_limiter, result_no_limiter_normalized = main(

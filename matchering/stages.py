@@ -18,7 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from tkinter import NO
 import numpy as np
+
+from matchering.stage_helpers.match_levels import preset_level
 from .log import Code, info, debug, debug_line
 from . import Config
 from .utils import to_db
@@ -57,8 +60,6 @@ def __match_levels(
         f"or {config.max_piece_size / config.internal_sample_rate:.2f} seconds"
     )
 
-    reference, final_amplitude_coefficient = normalize_reference(reference, config)
-
     (
         target_mid,
         target_side,
@@ -69,14 +70,21 @@ def __match_levels(
         target_piece_size,
     ) = analyze_levels(target, "target", config)
 
-    (
-        reference_mid,
-        reference_side,
-        reference_mid_loudest_pieces,
-        reference_side_loudest_pieces,
-        reference_match_rms,
-        *_,
-    ) = analyze_levels(reference, "reference", config)
+    reference_mid_loudest_pieces = None
+    reference_side_loudest_pieces = None
+    if config.reference_preset:
+        reference_match_rms, final_amplitude_coefficient = preset_level()
+    else:
+        reference, final_amplitude_coefficient = normalize_reference(reference, config)
+
+        (
+            reference_mid,
+            reference_side,
+            reference_mid_loudest_pieces,
+            reference_side_loudest_pieces,
+            reference_match_rms,
+            *_,
+        ) = analyze_levels(reference, "reference", config)
 
     rms_coefficient, target_mid, target_side = get_rms_c_and_amplify_pair(
         target_mid,
@@ -202,6 +210,9 @@ def __finalize(
     # Make a Pedalboard object, containing multiple plugins:
     vst = load_plugin("LoudMax.vst3")
     print(vst.parameters.keys())
+    vst.thresh_db = -1.0
+    vst.output_db = -0.2
+    vst.isp_detection = True
     board = Pedalboard([vst])
     if need_default:
         result = board(result_no_limiter, config.internal_sample_rate)

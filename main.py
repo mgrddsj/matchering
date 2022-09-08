@@ -7,9 +7,9 @@ mg.log(print)
 
 mg.process(
     # The track you want to master
-    target="C:\\Users\\tkich\Downloads\Sheep - isacc arr3d.mp3",
+    target="examples\\31072022035337.mp3",
     # Some "wet" reference track
-    reference="examples\\best ost mix.wav",
+    reference="",
     # Where and how to save your results
     results=[
         #mg.pcm16("my_song_master_16bit.wav"),
@@ -35,6 +35,7 @@ mg.process(
         # Allow matchering to accept the same files (useless in fact)
         # allow_equality=True
         reference_processed = True,
+        reference_preset = True,
         # high_filter = 800, in Hz
         # low_filter = 200, in Hz
         # Etc...

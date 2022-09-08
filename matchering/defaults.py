@@ -73,6 +73,7 @@ class Config:
         limited_samples_threshold: int = 128,
         allow_equality: bool = False,
         reference_processed: bool = False,
+        reference_preset: bool = False,
         lowess_frac: float = 0.075,
         lowess_it: int = 0,
         lowess_delta: float = 0.001,
@@ -135,6 +136,8 @@ class Config:
         self.allow_equality = allow_equality
         assert isinstance(reference_processed, bool)
         self.reference_processed= reference_processed
+        assert isinstance(reference_preset, bool)
+        self.reference_preset = reference_preset
 
         assert lowess_frac > 0
         assert lowess_it >= 0
