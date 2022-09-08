@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-
+import sys 
 import os
 import random
 import string
@@ -57,3 +57,7 @@ def make_odd(value: int) -> int:
 
 def time_str(length, sample_rate) -> str:
     return str(timedelta(seconds=length // sample_rate))
+
+def debugger_is_active() -> bool:
+    """Return if the debugger is currently active"""
+    return hasattr(sys, 'gettrace') and sys.gettrace() is not None

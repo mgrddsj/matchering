@@ -25,7 +25,7 @@ from scipy import signal, interpolate
 from ..log import debug
 from .. import Config
 from ..dsp import ms_to_lr, smooth_lowess, butter_bandpass_filter
-
+from ..utils import debugger_is_active
 
 def __average_fft(
     loudest_pieces: np.ndarray, sample_rate: int, fft_size: int
@@ -139,18 +139,19 @@ def get_fir(
     fir = np.fft.ifftshift(fir) * signal.windows.hann(len(fir))
 
     import matplotlib.pyplot as plt
-    fig, (ax_orig,ax_ref, ax_mag) = plt.subplots(3, 1)
-    ax_orig.plot(target_average_fft)
-    ax_orig.set_xscale('log')
-    ax_orig.set_title('original_fft')
-    ax_ref.plot(reference_average_fft)
-    ax_ref.set_xscale('log')
-    ax_ref.set_title('ref_fft')
-    ax_mag.plot(matching_fft_filtered)
-    ax_mag.set_xscale('log')
-    ax_mag.set_title('filter')
-    fig.tight_layout()
-    if __debug__:
+    if debugger_is_active():
+        fig, (ax_orig,ax_ref, ax_mag) = plt.subplots(3, 1)
+        ax_orig.plot(target_average_fft)
+        ax_orig.set_xscale('log')
+        ax_orig.set_title('original_fft')
+        ax_ref.plot(reference_average_fft)
+        ax_ref.set_xscale('log')
+        ax_ref.set_title('ref_fft')
+        ax_mag.plot(matching_fft_filtered)
+        ax_mag.set_xscale('log')
+        ax_mag.set_title('filter')
+        fig.tight_layout()
+    # if __debug__:
         fig.show()
 
     return fir

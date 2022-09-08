@@ -24,7 +24,7 @@ import numpy as np
 from matchering.stage_helpers.match_levels import preset_level
 from .log import Code, info, debug, debug_line
 from . import Config
-from .utils import to_db
+from .utils import to_db, debugger_is_active
 from .dsp import amplify, normalize, clip, butter_bandpass_filter
 from .stage_helpers import (
     normalize_reference,
@@ -209,7 +209,7 @@ def __finalize(
     result = None
     # Make a Pedalboard object, containing multiple plugins:
     vst = load_plugin("LoudMax.vst3")
-    print(vst.parameters.keys())
+    # print(vst.parameters.keys())
     vst.thresh_db = -1.0
     vst.output_db = -0.2
     vst.isp_detection = True
@@ -220,13 +220,14 @@ def __finalize(
         # result = amplify(result, final_amplitude_coefficient)
 
     import matplotlib.pyplot as plt
-    fig, (ax_orig, ax_mag) = plt.subplots(2, 1)
-    ax_orig.plot(result_no_limiter)
-    ax_orig.set_title('before limiter')
-    ax_mag.plot(result)
-    ax_mag.set_title('after limiter')
-    fig.tight_layout()
-    if __debug__:
+    if debugger_is_active():
+        fig, (ax_orig, ax_mag) = plt.subplots(2, 1)
+        ax_orig.plot(result_no_limiter)
+        ax_orig.set_title('before limiter')
+        ax_mag.plot(result)
+        ax_mag.set_title('after limiter')
+        fig.tight_layout()
+    # if __debug__:
         fig.show()
 
     result_no_limiter = result_no_limiter if need_no_limiter else None
