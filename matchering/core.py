@@ -56,6 +56,7 @@ def process(
 
     # is using preset?
     if config.reference_preset:
+        debug("Config set to use preset. Reference file is ignored. ")
         reference = None
         reference_sample_rate = config.internal_sample_rate
     else:

@@ -7,7 +7,7 @@ mg.log(print)
 
 mg.process(
     # The track you want to master
-    target="examples\\31072022035337.mp3",
+    target="examples\\03072022084848.mp3",
     # Some "wet" reference track
     reference="",
     # Where and how to save your results

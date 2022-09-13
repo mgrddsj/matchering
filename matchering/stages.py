@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from sqlite3 import Time
 from tkinter import NO
 import numpy as np
 
@@ -220,11 +221,13 @@ def __finalize(
         # result = amplify(result, final_amplitude_coefficient)
 
     import matplotlib.pyplot as plt
+    from datetime import timedelta
     if debugger_is_active():
+        preview = int(result_no_limiter.argmax().max()/2)
         fig, (ax_orig, ax_mag) = plt.subplots(2, 1)
-        ax_orig.plot(result_no_limiter)
-        ax_orig.set_title('before limiter')
-        ax_mag.plot(result)
+        ax_orig.plot(result_no_limiter[max(preview-5000,0):min(preview+5000,len(result_no_limiter)),0])
+        ax_orig.set_title(str(timedelta(seconds=int(preview/config.internal_sample_rate)))+' before limiter')
+        ax_mag.plot(result[max(preview-5000,0):min(preview+5000,len(result)),0])
         ax_mag.set_title('after limiter')
         fig.tight_layout()
     # if __debug__:
