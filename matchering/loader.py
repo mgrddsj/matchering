@@ -72,3 +72,18 @@ def __load_with_ffmpeg(
         except subprocess.CalledProcessError:
             debug(f"ffmpeg cannot convert '{file}' to .wav!")
     return sound, sample_rate
+
+def save_temp(bin, temp_folder: str) -> (str):
+    filename = random_file(prefix="temp",extension="mp3")
+    filepath = os.path.join(temp_folder, filename)
+    temp_file = open(filepath, "wb")
+    temp_file.write(bin)
+    temp_file.close
+    return filename
+
+def load_binary(file: str, folder: str) -> (vars):
+    filepath = os.path.join(folder, file)
+    temp_file = open(filepath, "rb")
+    result = temp_file.read()
+    temp_file.close
+    return result
