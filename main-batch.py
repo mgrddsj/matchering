@@ -24,7 +24,7 @@ for root, dirs, files in walk(args.input):
                 #mg.pcm16("my_song_master_16bit.wav"),
                 mg.Result(
                     args.output + "\\" + name,"LAME", use_limiter=True, normalize=True,
-                    no_eq= False
+                    no_eq= True # disable EQs for the moment
                 ),
             ],
             # Create a custom Config instance to edit matchering configuration

@@ -170,4 +170,4 @@ def analyze_levels(
 
 def preset_level(name: str = "PRESET") -> (float, float):
     if name == "PRESET":
-        return 0.36249, 1
+        return 0.282, 1 # -11 db
