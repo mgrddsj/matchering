@@ -26,7 +26,7 @@ from matchering.stage_helpers.match_levels import preset_level
 from .log import Code, info, debug, debug_line
 from . import Config
 from .utils import to_db, debugger_is_active
-from .dsp import amplify, normalize, clip, butter_bandpass_filter
+from .dsp import amplify, normalize, clip, ms_to_lr
 from .stage_helpers import (
     normalize_reference,
     analyze_levels,
@@ -262,7 +262,7 @@ def main(
 
     if need_no_equalizer:
         debug("Bypassing equalizer")
-        result_no_limiter = target
+        result_no_limiter = ms_to_lr(target_mid, target_side)
         result_no_limiter_mid = target_mid
     else: 
         result_no_limiter, result_no_limiter_mid = __match_frequencies(
