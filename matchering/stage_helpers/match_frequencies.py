@@ -98,34 +98,42 @@ def get_fir(
 
     fft_size = config.internal_sample_rate/2/len(reference_average_fft)
     
-    target_peak = target_average_fft[:int(config.low_filter/fft_size)].argmax().min()
-    reference_peak = reference_average_fft[:int(config.low_filter/fft_size)].argmax().min()
+    
+    reference_peak = reference_average_fft.argmax().min()
+    # within +/- a perfect 5th
+    peak_range_low_limit = int(reference_peak/1.5)
+    peak_range_hi_limit = int(reference_peak*1.5)
+    target_peak = peak_range_low_limit + target_average_fft[peak_range_low_limit:peak_range_hi_limit].argmax().min()
+    target_true_peak  = target_average_fft.argmax().min() 
 
-    if target_peak > reference_peak/1.5 and target_peak < reference_peak*1.5: # within +/- a perfect 5th
-        # transpose in terms of FFT numpy
-        peak_diff = target_peak - reference_peak
-        if peak_diff < 0:
-            reference_average_fft = np.delete(reference_average_fft,range(abs(peak_diff)))
-            reference_average_fft = np.append(reference_average_fft, reference_average_fft[peak_diff:])
-        if peak_diff > 0:
-            reference_average_fft = reference_average_fft[:-peak_diff]
-            reference_average_fft = np.insert(reference_average_fft,0,reference_average_fft[0:peak_diff])
+    # transpose in terms of FFT numpy
+    peak_diff = target_peak - reference_peak
+    if peak_diff < 0:
+        reference_average_fft = np.delete(reference_average_fft,range(abs(peak_diff)))
+        reference_average_fft = np.append(reference_average_fft, reference_average_fft[peak_diff:])
+    if peak_diff > 0:
+        reference_average_fft = reference_average_fft[:-peak_diff]
+        reference_average_fft = np.insert(reference_average_fft,0,reference_average_fft[0:peak_diff])
 
     np.maximum(config.min_value, target_average_fft, out=target_average_fft)
     matching_fft = reference_average_fft / target_average_fft
     if name == "mid":
         # if the target is poor in low range, avoid boosting
-        if target_average_fft.argmax().min() > config.low_filter/fft_size:
-            for x in range(int(config.low_filter/fft_size)):
+        if target_true_peak > config.low_filter/fft_size:
+            for x in range(target_true_peak):
                 if matching_fft[x] > 1:
-                    matching_fft[x] = 1
+                    matching_fft[x] = 0.5 * matching_fft[x]
+        # don't boost mid frequency, avoid muddiness
+        for x in range(int(target_peak*1.5),int(config.high_filter/fft_size)):
+            if matching_fft[x] > 1:
+                matching_fft[x] = 1
         # high filter, taming filter for more natural character of music
         for x in range(int(config.high_filter/fft_size),len(matching_fft)):
             if matching_fft[x] > 1:
                 matching_fft[x] = 0.5 * matching_fft[x]
     if name == "side":
-        # low filter, avoid gaining low range => muddiness
-        for x in range(int(max(config.low_filter/fft_size, target_average_fft.argmax().min()))):
+        # don't boost low/mid range, avoid muddiness
+        for x in range(int(max(config.high_filter/fft_size, target_true_peak))):
             if matching_fft[x] > 1:
                 matching_fft[x] = 1
         # high filter, taming filter for more natural character of music, leave out high freq air
