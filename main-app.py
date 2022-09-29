@@ -1,11 +1,10 @@
 
-from unittest import result
 import matchering as mg
 # web service variation
 from flask import Flask, request
 from flask_cors import CORS
 
-from matchering.loader import get_temp_name, load_binary, save_temp
+from matchering.loader import delete_temp, get_temp_name, load_binary, save_temp
 
 # any name will work for internal identification
 app = Flask(__name__)
@@ -52,8 +51,11 @@ def matchering():
             # Examine defaults.py to find other parameters
         ),
     )
+    result = load_binary(temp_file, result_folder)
+    delete_temp(temp_file,temp_folder)
+    delete_temp(temp_file,result_folder)
 
-    return load_binary(temp_file, result_folder), 200  # return data with 200 OK
+    return result, 200  # return data with 200 OK
 
 if __name__ == '__main__':
     app.run(debug=True)  # run our Flask app

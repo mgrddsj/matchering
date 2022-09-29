@@ -210,6 +210,7 @@ def __finalize(
     result = None
     # Make a Pedalboard object, containing multiple plugins:
     vst = load_plugin("LoudMax.vst3")
+    debug(f"loaded {vst.name}")
     # print(vst.parameters.keys())
     vst.thresh_db = -1.0
     vst.output_db = -0.2
@@ -219,6 +220,8 @@ def __finalize(
         result = board(result_no_limiter, config.internal_sample_rate)
         # result = limit(result_no_limiter, config)
         # result = amplify(result, final_amplitude_coefficient)
+    del board
+    del vst
 
     import matplotlib.pyplot as plt
     from datetime import timedelta

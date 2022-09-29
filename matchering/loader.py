@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
+import re
 import numpy as np
 import soundfile as sf
 import subprocess
@@ -83,9 +84,10 @@ def save_temp(bin, temp_folder: str) -> (str):
 
 def get_temp_name(name: str, folder: str) -> (str,str,str):
     filename, file_ext = os.path.splitext(name)
+    file_ext = file_ext[1:]
     filename = random_file(prefix=filename,extension=file_ext)
     filepath = os.path.join(folder, filename)
-    return filename, file_ext[1:].upper(), filepath
+    return filename, file_ext.upper(), filepath
 
 def load_binary(file: str, folder: str) -> (bytes):
     filepath = os.path.join(folder, file)
@@ -93,3 +95,7 @@ def load_binary(file: str, folder: str) -> (bytes):
     result = temp_file.read()
     temp_file.close
     return result
+
+def delete_temp(file: str, folder: str):
+    filepath = os.path.join(folder, file)
+    os.remove(filepath)
