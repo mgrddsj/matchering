@@ -5,6 +5,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Batch convert an input folder of music to an output folder')
 parser.add_argument("input", type=str, help="Input folder path (absolute or relative)")
 parser.add_argument("output", type=str, help="Output folder path (absolute or relative)")
+parser.add_argument("--no_eq", type=bool, default=False, help="disable EQ")
 parser.add_argument("--ref", type=str, default="", help='(Optional) Some "wet" reference track')
 parser.add_argument("--proc", type=bool, default=True, help='(Optional) if the reference track is a well selected loud section instead of a complete song')
 args = parser.parse_args()
@@ -24,7 +25,7 @@ for root, dirs, files in walk(args.input):
                 #mg.pcm16("my_song_master_16bit.wav"),
                 mg.Result(
                     args.output + "\\" + name,"LAME", use_limiter=True, normalize=True,
-                    no_eq= True # disable EQs for the moment
+                    no_eq= args.no_eq
                 ),
             ],
             # Create a custom Config instance to edit matchering configuration
