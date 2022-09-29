@@ -81,7 +81,13 @@ def save_temp(bin, temp_folder: str) -> (str):
     temp_file.close
     return filename
 
-def load_binary(file: str, folder: str) -> (vars):
+def get_temp_name(name: str, folder: str) -> (str,str,str):
+    filename, file_ext = os.path.splitext(name)
+    filename = random_file(prefix=filename,extension=file_ext)
+    filepath = os.path.join(folder, filename)
+    return filename, file_ext[1:].upper(), filepath
+
+def load_binary(file: str, folder: str) -> (bytes):
     filepath = os.path.join(folder, file)
     temp_file = open(filepath, "rb")
     result = temp_file.read()
