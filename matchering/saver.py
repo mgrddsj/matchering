@@ -30,16 +30,15 @@ def save(
 ) -> None:
     name = name.upper()
     debug(f"Saving the {name} {sample_rate} Hz Stereo {subtype} to: '{file}'...")
-    if subtype == 'LAME':
-        with AudioFile(
-        file,
-        "w",
-        samplerate=sample_rate,
-        num_channels=2,
-        quality=320,  # kilobits per second
-        ) as f:
-            f.write(result)
-    else :
-        sf.write(file, result, sample_rate, subtype)
+    
+    with AudioFile(
+    file,
+    "w",
+    samplerate=sample_rate,
+    num_channels=2,
+    # quality=320 if subtype == 'LAME' else None,  # kilobits per second
+    ) as f:
+        f.write(result)
+#        sf.write(file, result, sample_rate, subtype)
     
     debug(f"'{file}' is saved")

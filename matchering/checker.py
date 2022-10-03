@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import numpy as np
-from resampy import resample
+from pedalboard.io import ReadableAudioFile
 
 from .log import Code, warning, info, debug, ModuleError
 from . import Config
@@ -28,33 +28,37 @@ from .utils import time_str
 
 
 def __check_sample_rate(
-    array: np.ndarray,
-    sample_rate: int,
+    file: ReadableAudioFile,
     required_sample_rate: int,
     name: str,
     log_handler,
     log_code: Code,
-) -> (np.ndarray, int):
-    if sample_rate != required_sample_rate:
+) -> tuple[np.ndarray, int]:
+    
+    if file.samplerate != required_sample_rate:
         debug(
-            f"Resampling {name} audio from {sample_rate} Hz to {required_sample_rate} Hz..."
+            f"Resampling {name} audio from {file.samplerate} Hz to {required_sample_rate} Hz..."
         )
-        array = resample(array, sample_rate, required_sample_rate, axis=0)
+        re_file = file.resampled_to(required_sample_rate)
         log_handler(log_code)
-    return array, required_sample_rate
+        array = re_file.read(re_file.frames)
+        re_file.close()
+    else:
+        array = file.read(file.frames)
+
+    return np.rot90(array,k=1,axes=(1,0)), required_sample_rate
 
 
 def __check_length(
-    array: np.ndarray,
-    sample_rate: int,
+    file: ReadableAudioFile,
     max_length: int,
-    min_length: int,
+    min_length: float,
     name: str,
     error_code_max: Code,
     error_code_min: Code,
 ) -> None:
-    length = size(array)
-    debug(f"{name} audio length: {length} samples ({time_str(length, sample_rate)})")
+    length = file.duration
+    debug(f"{name} audio length: {time_str(length)}")
     if length > max_length and name == "TARGET":
         raise ModuleError(error_code_max)
     elif length < min_length:
@@ -88,15 +92,14 @@ def __check_clipping_limiting(
 
 
 def check(
-    array: np.ndarray, sample_rate: int, config: Config, name: str
+    file: ReadableAudioFile, config: Config, name: str
 ) -> (np.ndarray, int):
     name = name.upper()
 
     __check_length(
-        array,
-        sample_rate,
-        config.max_length * sample_rate,
-        config.fft_size * sample_rate // config.internal_sample_rate,
+        file,
+        config.max_length,
+        config.fft_size  / file.samplerate,
         name,
         Code.ERROR_TARGET_LENGTH_IS_EXCEEDED
         if name == "TARGET"
@@ -104,6 +107,17 @@ def check(
         Code.ERROR_TARGET_LENGTH_IS_TOO_SMALL
         if name == "TARGET"
         else Code.ERROR_REFERENCE_LENGTH_LENGTH_TOO_SMALL,
+    )
+
+    
+    array, sample_rate = __check_sample_rate(
+        file,
+        config.internal_sample_rate,
+        name,
+        warning if name == "TARGET" else info,
+        Code.WARNING_TARGET_IS_RESAMPLED
+        if name == "TARGET"
+        else Code.INFO_REFERENCE_IS_RESAMPLED,
     )
 
     array = __check_channels(
@@ -114,16 +128,6 @@ def check(
         else Code.ERROR_REFERENCE_NUM_OF_CHANNELS_IS_EXCEEDED,
     )
 
-    array, sample_rate = __check_sample_rate(
-        array,
-        sample_rate,
-        config.internal_sample_rate,
-        name,
-        warning if name == "TARGET" else info,
-        Code.WARNING_TARGET_IS_RESAMPLED
-        if name == "TARGET"
-        else Code.INFO_REFERENCE_IS_RESAMPLED,
-    )
 
     if name == "TARGET":
         __check_clipping_limiting(

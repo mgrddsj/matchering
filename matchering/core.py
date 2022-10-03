@@ -27,7 +27,7 @@ from .preview_creator import create_preview
 from .utils import get_temp_folder
 from .checker import check, check_equality
 from .dsp import channel_count, size
-
+from pedalboard.io import ReadableAudioFile
 
 def process(
     target: str,
@@ -46,43 +46,41 @@ def process(
     if not results:
         raise RuntimeError(f"The result list is empty")
 
-    # Get a temporary folder for converting mp3's
-    temp_folder = config.temp_folder if config.temp_folder else get_temp_folder(results)
-
-    # Load the target
-    target, target_sample_rate = load(target, "target", temp_folder)
+    f = ReadableAudioFile(target)
+    debug(f"Trying to load '{f.name}' with pedalboard.io...")
     # Analyze the target
-    target, target_sample_rate = check(target, target_sample_rate, config, "target")
+    target_raw, target_sample_rate = check(f, config, "target")
+    f.close()
 
     # is using preset?
     if config.reference_preset:
         debug("Config set to use preset. Reference file is ignored. ")
-        reference = None
+        reference_raw = None
         reference_sample_rate = config.internal_sample_rate
     else:
-        # Load the reference
-        reference, reference_sample_rate = load(reference, "reference", temp_folder)
+        f = ReadableAudioFile(reference)
         # Analyze the reference
-        reference, reference_sample_rate = check(
-            reference, reference_sample_rate, config, "reference"
+        reference_raw, reference_sample_rate = check(
+            f,  config, "reference"
         )
+        f.close()
 
         # Analyze the target and the reference together
         if not config.allow_equality:
-            check_equality(target, reference)
+            check_equality(target_raw, reference_raw)
 
         # Validation of the most important conditions
         if (
             not (target_sample_rate == reference_sample_rate == config.internal_sample_rate)
-            or not (channel_count(target) == channel_count(reference) == 2)
-            or not (size(target) > config.fft_size and size(reference) > config.fft_size)
+            or not (channel_count(target_raw) == channel_count(reference_raw) == 2)
+            or not (size(target_raw) > config.fft_size and size(reference_raw) > config.fft_size)
         ):
             raise ModuleError(Code.ERROR_VALIDATION)
 
     # Process
     result, result_no_limiter, result_no_limiter_normalized = main(
-        target,
-        reference,
+        target_raw,
+        reference_raw,
         config,
         need_default=any(rr.use_limiter for rr in results),
         need_no_limiter=any(not rr.use_limiter and not rr.normalize for rr in results),
@@ -92,9 +90,9 @@ def process(
         need_no_equalizer=any(rr.no_eq for rr in results),
     )
 
-    del reference
+    del reference_raw
     if not (preview_target or preview_result):
-        del target
+        del target_raw
 
     debug_line()
     info(Code.INFO_EXPORTING)
@@ -122,7 +120,7 @@ def process(
             for item in [result, result_no_limiter, result_no_limiter_normalized]
             if item is not None
         )
-        create_preview(target, result, config, preview_target, preview_result)
-
+        create_preview(target_raw, result, config, preview_target, preview_result)
+        del target_raw
     debug_line()
     info(Code.INFO_COMPLETED)

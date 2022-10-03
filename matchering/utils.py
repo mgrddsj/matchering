@@ -55,8 +55,8 @@ def make_odd(value: int) -> int:
     return value + 1 if not value & 1 else value
 
 
-def time_str(length, sample_rate) -> str:
-    return str(timedelta(seconds=length // sample_rate))
+def time_str(length) -> str:
+    return str(timedelta(seconds=length))
 
 def debugger_is_active() -> bool:
     """Return if the debugger is currently active"""
