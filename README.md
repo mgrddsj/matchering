@@ -124,18 +124,18 @@ If our package saved your time or money, you may:
 [Video]: http://www.youtube.com/watch?v=8Su5STDYfcA "Matchering 2.0 - Open Source Audio Matching and Mastering"
 
 
-### About using this fork
+## About using this fork
 
 - main.py - basic example to run in debug mode with VS code. 
 - main-batch.py - batch convert command line tool
 - main-app.py - flask HTTP API server to use with a front end web for example: https://github.com/isaacmuxic/isaacmuxic.github.io/tree/main/matchering
 
 
-## new config available:
+### new config available:
 - reference_preset: True if to use pre-processed loudness and ref-mid.npy, ref-side.npy frequency spectrum instead of loading a reference file. I have tailor made the loudness and EQ for general pop music usage. 
 - reference_processed: True if the reference file is to be analysized as a whole instead of selecting the loudess section from it. 
 - high_filter / low_filter: in Hz, affects the EQ analysis and matching process. 
 
-## new result options:
+### new result options:
 - "LAME" as subtype, support saving to ".mp3" result file 
 - no_eq: True if to bypass EQ matching process. 
