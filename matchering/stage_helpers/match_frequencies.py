@@ -146,7 +146,7 @@ def get_fir(
     fir = np.fft.irfft(matching_fft_filtered)
     fir = np.fft.ifftshift(fir) * signal.windows.hann(len(fir))
 
-    import matplotlib.pyplot as plt
+    """ import matplotlib.pyplot as plt
     if debugger_is_active():
         fig, (ax_orig,ax_ref, ax_mag) = plt.subplots(3, 1)
         ax_orig.plot(target_average_fft)
@@ -160,7 +160,7 @@ def get_fir(
         ax_mag.set_title('filter')
         fig.tight_layout()
     # if __debug__:
-        fig.show()
+        fig.show() """
 
     return fir
 

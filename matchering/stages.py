@@ -223,7 +223,7 @@ def __finalize(
     del board
     del vst
 
-    import matplotlib.pyplot as plt
+    """ import matplotlib.pyplot as plt
     from datetime import timedelta
     if debugger_is_active():
         preview = int(result_no_limiter.argmax().max()/2)
@@ -234,7 +234,7 @@ def __finalize(
         ax_mag.set_title('after limiter')
         fig.tight_layout()
     # if __debug__:
-        fig.show()
+        fig.show() """
 
     result_no_limiter = result_no_limiter if need_no_limiter else None
 
