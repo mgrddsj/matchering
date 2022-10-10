@@ -38,26 +38,6 @@ So **Matchering 2.0** will make your song sound the way you want! It opens up a 
 > - Processing speed and accuracy have been increased
 > - Now it is [the library][PyPI] that can be connected to **everything** in **the Python world**
 
-# Installation and Usage
-
-If you are a music producer or an audio engineer, choose the **[Docker Image]**. 
-
-If you are a developer, choose the **[Python Library](#python-library---for-developers)**.
-
-# Docker Image - The Easiest Way
-
-**Matchering 2.0** works on all major platforms using **Docker**.
-
-## Choose yours
-
-### [Windows](https://github.com/sergree/matchering/blob/master/DOCKER_WINDOWS.md)
-### [macOS](https://github.com/sergree/matchering/blob/master/DOCKER_MACOS.md)
-### [Linux](https://github.com/sergree/matchering/blob/master/DOCKER_LINUX.md)
-
-## Updating
-
-If you need to update the version of the installed **Docker Image**, follow **[these instructions](https://github.com/sergree/matchering/blob/master/DOCKER_UPDATING.md)**.
-
 # Python Library - For Developers
 
 ## Installation
@@ -159,3 +139,20 @@ If our package saved your time or money, you may:
 [matchering-cli]: https://github.com/sergree/matchering-cli
 [examples directory]: https://github.com/sergree/matchering/tree/master/examples
 [Video]: http://www.youtube.com/watch?v=8Su5STDYfcA "Matchering 2.0 - Open Source Audio Matching and Mastering"
+
+
+### about using this fork
+
+main.py - basic example to run in debug mode with VS code. 
+main-batch.py - batch convert command line tool
+main-app.py - flask HTTP API server to use with a front end web for example: https://github.com/isaacmuxic/isaacmuxic.github.io/tree/main/matchering
+
+
+- new config available:
+reference_preset: True if to use pre-processed loudness and ref-mid.npy, ref-side.npy frequency spectrum instead of loading a reference file. I have tailor made the loudness and EQ for general pop music usage. 
+reference_processed: True if the reference file is to be analysized as a whole instead of selecting the loudess section from it. 
+high_filter / low_filter: in Hz, affects the EQ analysis and matching process. 
+
+- new result options:
+save to ".mp3" result file, with "LAME" as subtype
+no_eq: True if to bypass EQ matching process. 
