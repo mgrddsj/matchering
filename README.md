@@ -126,9 +126,9 @@ If our package saved your time or money, you may:
 
 ### About using this fork
 
-main.py - basic example to run in debug mode with VS code. 
-main-batch.py - batch convert command line tool
-main-app.py - flask HTTP API server to use with a front end web for example: https://github.com/isaacmuxic/isaacmuxic.github.io/tree/main/matchering
+- main.py - basic example to run in debug mode with VS code. 
+- main-batch.py - batch convert command line tool
+- main-app.py - flask HTTP API server to use with a front end web for example: https://github.com/isaacmuxic/isaacmuxic.github.io/tree/main/matchering
 
 
 ## new config available:
