@@ -56,25 +56,9 @@ On some Linux distributions, **python3-pip** is not installed by default. For ex
 
 ```sudo apt -y install python3-pip```
 
-### Matchering Python Package
+### required library
 
-Finally, install our `matchering` package:
-
-```
-# Linux / macOS
-python3 -m pip install -U matchering
-
-# Windows
-python -m pip install -U matchering
-```
-
-### *(Optional) FFmpeg*
-
-If you would like to enable *MP3 loading support*, you need to install the **[FFmpeg][FFmpeg]** library. For example use this command on Ubuntu Linux:
-
-```sudo apt -y install ffmpeg```
-
-Or follow these instructions: [Windows][FFmpeg-win], [macOS][FFmpeg-mac].
+check out requirements.txt
 
 ## Quick Example
 
@@ -100,8 +84,7 @@ mg.process(
 ```
 
 You can find more examples in the **[examples directory]**.
-
-### Or you can use premade **Matchering 2.0 Command Line Application**: **[matchering-cli]**.
+See also "About using this fork" at the end of this readme doc. 
 
 ## A Coffee
 
@@ -141,7 +124,7 @@ If our package saved your time or money, you may:
 [Video]: http://www.youtube.com/watch?v=8Su5STDYfcA "Matchering 2.0 - Open Source Audio Matching and Mastering"
 
 
-### about using this fork
+### About using this fork
 
 main.py - basic example to run in debug mode with VS code. 
 main-batch.py - batch convert command line tool
